@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html ng-app="pypics">
+  <head>
+    <title>{{ object.title or object.name }}</title>
+    <meta name="twitter:card" content="summary">
+    <meta name="og:type" content="website" />
+    <meta name="og:image" content="{{ object.image }}"/>
+    <meta name="og:title" content="{{ object.title or object.name }}" />
+    <meta name="og:description" content="{{ object.description }}"/>
+    <meta name="og:url" content="{{ object.url }}"/>
+    {% for stylesheet in stylesheets %}
+      <link rel="stylesheet" type="text/css" href="{{ stylesheet }}" />
+    {% endfor %}
+    <style type="text/css">
+      {% block css %}
+      {% endblock css %}
+    </style>
+  </head>
+  <body>
+    {% block contents %}
+    {% endblock contents %}
+    {% for javascript in javascripts %}
+      <script type="text/javascript" src="{{ javascript }}"></script>
+    {% endfor %}
+  </body>
+</html>

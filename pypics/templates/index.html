@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block contents %}
+<div class="container">
+  {% for object in all_sets %}
+    <div class="thumb col-lg-2">
+      <a href="{{ object.url }}" title="{{ object.title }}"
+         rel="{{ object.photo() }}"
+         ><img class="img-thumbnail"
+               src="{{ object.thumbnail() }}"
+               alt="{{ object.title }}" /></a>
+    </div>
+  {% endfor %}
+</div>
+{% endblock contents %}

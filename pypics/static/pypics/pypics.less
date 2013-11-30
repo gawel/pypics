@@ -1,0 +1,81 @@
+@height: 50px;
+
+.rounded-corners (@radius: 5px) {
+  -webkit-border-radius: @radius;
+  -moz-border-radius: @radius;
+  -ms-border-radius: @radius;
+  -o-border-radius: @radius;
+  border-radius: @radius;
+}
+body {
+    background: color('black');
+}
+
+.tags,
+.next,
+.previous {
+    width: 25%;
+    display: block;
+    position: absolute;
+    height: 100%;
+    &:hover {
+        display: block;
+        text-decoration: none;
+        cursor:pointer;
+    }
+}
+.previous {
+    left: 0px;
+    div { left: 0px; }
+}
+.next, .tags {
+    right: 0px;
+    div { right: 0px; }
+}
+.container .thumb {
+    margin-bottom: 10px;
+}
+.ng-set img {
+    .rounded-corners(15px);
+    margin-top: 10px;
+}
+
+a {
+    color: color('black');
+    &:hover {
+        color: color('black');
+        text-decoration: none;
+    }
+}
+nav {
+    background: color('white');
+    width: 100%;
+    height: @height;
+    position: absolute;
+}
+nav {
+    opacity: 0;
+    display: block;
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.4);
+        opacity: 1;
+    }
+    .infos {
+        padding-top: 15px;
+        display: block;
+        margin-left: 25%;
+        margin-right: 25%;
+    }
+    .glyphicon {
+        position: absolute;
+        font-size: @height - 20;
+        top: 10px;
+    }
+    div.glyphicon-circle-arrow-left {
+        left: 10px;
+    }
+    .tags, div.glyphicon-circle-arrow-right {
+        right: 10px;
+        top: 10px;
+    }
+}

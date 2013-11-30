@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block contents %}
+<div ng-controller="SetCtrl" data-ng-init="init()">
+  <div class="set hide">
+    {% for i, object in enumerate(object_list) %}
+      <a href="{{ object.url }}" title="{{ object.title }}"
+         rel="{{ object.photo() }}"
+         ><img class="img-thumbnail"
+               src="{{ object.thumbnail() }}"
+               alt="{{ object.title }}" /></a>
+    {% endfor %}
+  </div>
+  <div class="ng-set text-center">
+    <a class="previous" ng-style="size"
+       ng-show="current > 0"
+       ng-click="previous()"
+       >
+    </a>
+    <a class="next" ng-style="size"
+       ng-show="current < photos.length - 1"
+       ng-click="next()"
+       >
+    </a>
+    <nav>
+      <a class="previous"
+         ng-show="current > 0"
+         ng-click="previous()"
+         ><div class="glyphicon glyphicon-circle-arrow-left"></div>
+      </a>
+      <a class="next"
+         ng-show="current < photos.length - 1"
+         ng-click="next()"
+         ><div class="glyphicon glyphicon-circle-arrow-right"></div>
+      </a>
+      <a class="infos"
+          href="{$ photos[current].href $}">{$ photos[current].title $}</a>
+    </nav>
+    <img src="{$ img.src $}" ng-show="$index == current"
+         ng-style="$index == current && image_size"
+         ng-repeat="img in photos"
+         />
+  </div>
+</div>
+{% endblock contents %}
