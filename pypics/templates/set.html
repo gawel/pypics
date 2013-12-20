@@ -1,16 +1,19 @@
 {% extends "base.html" %}
 {% block contents %}
 <div ng-controller="SetCtrl" data-ng-init="init()">
-  <div class="set hide">
+  <div class="container set" ng-show="!anchor()">
     {% for i, object in enumerate(object_list) %}
-      <a href="{{ object.url }}" title="{{ object.title }}"
-         rel="{{ object.photo() }}"
-         ><img class="img-thumbnail"
-               src="{{ object.thumbnail() }}"
-               alt="{{ object.title }}" /></a>
+      <div class="thumb col-lg-2">
+        <a href="{{ object.url }}" title="{{ object.title }}"
+           rel="{{ object.photo() }}" id="{{ i }}"
+           ng-click="show({{i}})"
+           ><img class="img-thumbnail"
+                 src="{{ object.thumbnail() }}"
+                 alt="{{ object.title }}" /></a>
+      </div>
     {% endfor %}
   </div>
-  <div class="ng-set text-center">
+  <div class="ng-set text-center" ng-show="anchor()">
     <a class="previous" ng-style="size"
        ng-show="current > 0"
        ng-click="previous()"

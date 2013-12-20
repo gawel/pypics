@@ -5,8 +5,6 @@ from ConfigObject import ConfigObject
 from datetime import datetime
 from chut import test, git, path, env, find, grep, pwd, mkdir
 import chut as sh
-import json
-import six
 import os
 
 env.lc_all = 'C'
@@ -345,38 +343,6 @@ def post_update(args):
 
 
 @sh.console_script
-def pics_init(args):
-    """
-    Usage: %prog <directory>
-    """
-    dirname = args['<directory>']
-    if not test.d(dirname):
-        sh.mkdir(dirname)
-    sh.cd(dirname)
-    if not test.d('.git'):
-        git('init') > 1
-    if not git('config --local --get',
-               'receive.denycurrentbranch') | sh.grep('ignore'):
-        git('config --local receive.denycurrentbranch ignore') > 1
-    if not test.d('lib/galleria'):
-        git('submodule add',
-            'git://github.com/aino/galleria.git',
-            'lib/galleria') > 1
-    if not test.d('lib/emberjs'):
-        git('submodule add',
-            'git://github.com/emberjs/starter-kit.git',
-            'lib/emberjs') > 1
-    git('submodule init') > 1
-    git('submodule update') > 1
-    if not test.f('.gitignore'):
-        sh.stdin(six.b('thumbs/')) > '.gitignore'
-    git('add -A') > 1
-    git('commit', '-m', '"Initial commit"', shell=True) > 1
-    if not test.x('.git/hooks/post-update'):
-        auto_update()
-
-
-@sh.console_script
 def pics(args):
     """
     Usage: %prog (update|push) [options]
@@ -444,14 +410,9 @@ def pics(args):
             filename = path.expanduser(filename.strip())
             if path.splitext(filename)[1].lower() not in ('.jpg',):
                 continue
+            if path.isfile(filename + '.metadata'):
+                continue
             new_filename = path.basename(filename).replace(' ', '_')
             config = Photo(filename=new_filename)
             config.rotate(original=filename)
             config.write()
-    elif args['push']:
-        try:
-            git('add -A') > 1
-            git('commit', '-m', '"Update"', shell=True) > 1
-        except OSError:
-            pass
-        git('push origin master') > 1
