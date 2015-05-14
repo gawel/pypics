@@ -1,7 +1,7 @@
 {
-  "name": "GitPics",
+  "name": "pypics",
   "version": "0.1",
-  "homepage": "https://github.com/gawel/GitPics",
+  "homepage": "https://github.com/gawel/pypics",
   "authors": [
     "Gael Pasgrimaud <gael@gawel.org>"
   ],
