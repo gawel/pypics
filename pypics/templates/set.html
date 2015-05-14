@@ -2,8 +2,9 @@
 {% block contents %}
 <div ng-controller="SetCtrl" data-ng-init="init()">
   <div class="container set" ng-show="!anchor()">
-    {% for i, object in enumerate(object_list) %}
+    {% for i, object in enumerate(container.object_list) %}
       <div class="thumb col-lg-2">
+
         <a href="{{ object.url }}" title="{{ object.title }}"
            rel="{{ object.photo() }}" id="{{ i }}"
            ng-click="show({{i}})"
@@ -35,8 +36,12 @@
          ng-click="next()"
          ><div class="glyphicon glyphicon-circle-arrow-right"></div>
       </a>
-      <a class="infos"
-          href="{$ photos[current].href $}">{$ photos[current].title $}</a>
+      <div class="infos">
+        <a class="btn-small"
+           href="{{container.url}}"
+           >{{container.title}}</a>/<a class="btn-small"
+            href="{$ photos[current].href $}">{$ photos[current].title $}</a>
+      </div>
     </nav>
     <img src="{$ img.src $}" ng-show="$index == current"
          ng-style="$index == current && image_size"

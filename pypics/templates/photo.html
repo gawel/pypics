@@ -1,14 +1,17 @@
 {% extends "base.html" %}
 {% block contents %}
-  <div class="ng-set text-center">
+  <div ng-controller="PhotoCtrl" class="ng-set text-center">
     <nav>
       <div class="tags">
         {% for tag in object.tags %}
           <a class="btn btn-default btn-xs" href="/tags/{{ tag }}">{{ tag }}</a>
         {% endfor %}
       </div>
-      <a class="infos"
+      <div class="infos">
+      <a class="btn-small" href="{{ container.url }}" title="{{ container.title }}">
+        {{ container.title }}</a>/<a class="btn-small"
           href="{{ object.url }}">{{ object.title }}</a>
+      </div>
     </nav>
       <a href="{{ container.url }}"
          title="{{ object.title }}"

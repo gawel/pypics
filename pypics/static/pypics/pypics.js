@@ -9,10 +9,12 @@ pypics.config(function ($interpolateProvider) {
 });
 
 
-function PhotoCtrl($scope) {
-    $scope.size = {"height": window.innerHeight + "px"};
-    $(window).resize(function () {
-        $scope.size = {"height": window.innerHeight + "px"};
+function PhotoCtrl($scope, $window) {
+    $scope.size = {"height": $window.innerHeight + "px"};
+    $scope.image_size = {"height": ($window.innerHeight-20) + "px"};
+    $($window).resize(function () {
+        $scope.size = {"height": $window.innerHeight + "px"};
+        $scope.image_size = {"height": ($window.innerHeight-20) + "px"};
         $scope.$apply();
     });
 }

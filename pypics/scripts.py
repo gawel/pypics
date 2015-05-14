@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import jinja2
+from operator import attrgetter
 from collections import defaultdict
 from ConfigObject import ConfigObject
 from datetime import datetime
@@ -13,21 +14,19 @@ if sh.which('exif'):
     EXIF_AVAILABLE = True
 else:
     EXIF_AVAILABLE = False
+    print('exif binary is not available')
 
 if sh.which('convert'):
     CONVERT_AVAILABLE = True
 else:
     CONVERT_AVAILABLE = False
+    print('convert binary is not available')
 
 
 def safe_unicode(value):
     if isinstance(value, str):
         return value.decode('utf8')
     return value
-
-
-def cmp_date(a, b):
-    return cmp(a['date'], b['date'])
 
 
 class Photo(ConfigObject):
@@ -44,7 +43,7 @@ class Photo(ConfigObject):
             self.write()
 
     def __getattr__(self, attr):
-        if attr in ('title',):
+        if attr in ('title', 'description'):
             return safe_unicode(self.metadata[attr])
         if attr.startswith('thumb_'):
             return self.thumbnail(size=attr.split('_'))
@@ -68,22 +67,27 @@ class Photo(ConfigObject):
         return safe_unicode(title)
 
     @property
-    def url(self):
+    def path(self):
         filename = self.filename[len(pwd()) + 1:-9]
         filename, _ = path.splitext(filename)
         return '/' + filename + '/'
 
+    @property
+    def url(self):
+        return env.url + self.path
+
     def thumbnail(self, size=200):
         filename = self.filename[len(pwd()) + 1:-9]
-        url = '/thumbs/%(s)sx%(s)s/' % dict(s=size)
+        url = env.url + '/thumbs/%(s)sx%(s)s/' % dict(s=size)
         return url + filename
 
     def photo(self):
-        return self.thumbnail(size=1280)
+        url = self.thumbnail(size=1280)
+        return url
 
     @property
     def output_filename(self):
-        return path(self.url.lstrip('/'), 'index.html')
+        return path(self.path.lstrip('/'), 'index.html')
 
     @property
     def tags(self):
@@ -92,7 +96,12 @@ class Photo(ConfigObject):
     @property
     def date(self):
         date = self.metadata.date
-        return datetime.strptime(date, '%Y-%m-%d %H:%M:00')
+        for f in ('%Y:%m:%d %H:%M:%S', '%Y-%m-%d %H:%M:%S'):
+            try:
+                return datetime.strptime(date, f)
+            except ValueError:
+                continue
+        return datetime(1900, 1, 1)
 
     def parse_exif(self):
         filename = self.filename[:-9]
@@ -124,9 +133,6 @@ class Photo(ConfigObject):
             self.metadata.date = now.strftime('%Y-%m-%d %H:%M:00')
             self.exif.Date_and_Time = self.metadata.date
 
-    def __cmp__(self, other):
-        return cmp(self.metadata.date, other.metadata.date)
-
     def __repr__(self):
         return '<Photo for %r>' % self.filename[len(pwd()) + 1:-9]
 
@@ -145,15 +151,23 @@ class Container(list):
         return self.name
 
     @property
-    def url(self):
+    def path(self):
         return '/' + self.name + '/'
 
     @property
+    def url(self):
+        return env.url + self.path
+
+    @property
     def output_filename(self):
-        return path(self.url.lstrip('/'), 'index.html')
+        return path(self.path.lstrip('/'), 'index.html')
+
+    @property
+    def object_list(self):
+        return list(sorted(self, key=attrgetter('date')))
 
     def __getattr__(self, attr):
-        return getattr(self[0], attr)
+        return getattr(self.object_list[0], attr)
 
     def __repr__(self):
         return '<%s %r (%s items)>' % (self.__class__.__name__,
@@ -178,7 +192,7 @@ class Tag(Container):
         self.name = name
 
     @property
-    def url(self):
+    def path(self):
         return path('/tags', self.name) + '/'
 
 
@@ -189,7 +203,7 @@ class Index(object):
     PhotoClass = Photo
 
     def __init__(self, **config):
-        self.sizes = (200, 1280)
+        self.sizes = (200, 600, 1280)
         self.build_path = config.get('build_path', 'build')
         package = os.path.dirname(__file__)
         self.static_dir = path(package, 'static')
@@ -241,7 +255,7 @@ class Index(object):
                 if test.f(thumb):
                     continue
                 sh.mkdir('-p', path.dirname(thumb)) > 1
-                if size > 300:
+                if size > 600:
                     msize = '%sx%s' % (size + 200, size + 200)
                     processes.append(' '.join([
                         '-define jpeg:size=' + msize,
@@ -281,18 +295,22 @@ class Index(object):
             print(container)
             self.render(container,
                         title=container.name,
-                        object_list=container,
+                        container=container,
                         **context)
             if isinstance(container, Set):
-                for index, photo in enumerate(container):
+                for index, photo in enumerate(container.object_list):
                     self.render(photo,
                                 index=index,
                                 container=container,
                                 **context)
 
     @property
-    def url(self):
+    def path(self):
         return '/'
+
+    @property
+    def url(self):
+        return env.url + self.path
 
     @property
     def output_filename(self):
@@ -353,10 +371,11 @@ def pics(args):
 
     Options:
 
-    -t, --thumbs    Generate thumbs
-    -s, --static    Generate static assets
-    -d, --directory A directory containing images [default: .]
-    -h, --help      Print this help
+    -u URL, --url=URL  Absolute url to use
+    -t, --thumbs       Generate thumbs
+    -s, --static       Generate static assets
+    -d, --directory    A directory containing images [default: .]
+    -h, --help         Print this help
     """
     build_path = os.path.abspath('build')
     pics = Index(build_path=build_path)
@@ -364,6 +383,8 @@ def pics(args):
         pics.resize()
     if args['--static']:
         pics.get_resources()
+    url = args['--url'] or ''
+    env.url = url.strip('/')
     if args['serve'] or args['admin']:
         os.chdir(pics.build_path)
         from serve import serve
