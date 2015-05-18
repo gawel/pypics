@@ -5,16 +5,18 @@
     <meta name="og:type" content="article" />
     <meta name="og:title" content="." />
     <meta name="og:description" content=""/>
-    <meta name="og:url" content="{{ object.url }}"/>
+    <meta name="og:url" content="{{ env.url + object.url }}"/>
 
     <meta name="twitter:title" content="." />
     <meta name="twitter:description" content=""/>
-    <meta  name="twitter:card"content="summary_large_image">
-    <meta name="twitter:url" content="{{ object.url }}"/>
+    <meta name="twitter:card"content="summary_large_image">
+    <meta name="twitter:url" content="{{ env.url + object.url }}"/>
 
     {% if object.thumbnail %}
-      <meta name="og:image" content="{{ object.thumbnail(size=600) }}"/>
-      <meta name="twitter:image:src" content="{{ object.thumbnail(size=600) }}"/>
+      <meta name="og:image"
+            content="{{ env.url + object.thumbnail(size=600) }}"/>
+      <meta name="twitter:image:src"
+            content="{{ env.url + object.thumbnail(size=600) }}"/>
     {% endif %}
 
     {% for stylesheet in stylesheets %}

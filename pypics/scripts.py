@@ -4,7 +4,7 @@ from operator import attrgetter
 from collections import defaultdict
 from ConfigObject import ConfigObject
 from datetime import datetime
-from chut import test, git, path, env, find, grep, pwd, mkdir
+from chut import test, git, path, env, find, pwd, mkdir
 import chut as sh
 import os
 
@@ -74,11 +74,11 @@ class Photo(ConfigObject):
 
     @property
     def url(self):
-        return env.url + self.path
+        return self.path
 
     def thumbnail(self, size=200):
         filename = self.filename[len(pwd()) + 1:-9]
-        url = env.url + '/thumbs/%(s)sx%(s)s/' % dict(s=size)
+        url = '/thumbs/%(s)sx%(s)s/' % dict(s=size)
         return url + filename
 
     def photo(self):
@@ -156,7 +156,7 @@ class Container(list):
 
     @property
     def url(self):
-        return env.url + self.path
+        return self.path
 
     @property
     def output_filename(self):
@@ -206,7 +206,7 @@ class Index(object):
         self.sizes = (200, 600, 1280)
         self.build_path = config.get('build_path', 'build')
         package = os.path.dirname(__file__)
-        self.static_dir = path(package, 'static')
+        self.static_dir = path(package, 'static', 'sdist')
 
         metadatas = [self.PhotoClass(p)
                      for p in find(pwd(), '-name *metadata')]
@@ -224,24 +224,17 @@ class Index(object):
         )
 
     def get_resources(self):
-        if sh.which('lessc'):
-            sh.lessc(path(self.static_dir, 'pypics', 'pypics.less'),
-                     path(self.static_dir, 'pypics', 'pypics.css')) > 1
-
-        excludes = grep('-vE (example|prefixed|migrate|theme)')
         javascripts = sorted(find(
-            self.static_dir, r'-name *.min.js') | excludes, reverse=True)
-        javascripts.append(path(self.static_dir, 'pypics', 'pypics.js'))
+            self.static_dir, r'-name *.js'), reverse=True)
         stylesheets = list(find(
-            self.static_dir, r'-name *.min.css') | excludes)
-        stylesheets.append(path(self.static_dir, 'pypics', 'pypics.css'))
+            self.static_dir, r'-name *.css'))
 
         l = len(self.static_dir) + 1
         resources = dict(
-            stylesheets=['/static/' + r[l:] for r in stylesheets],
-            javascripts=['/static/' + r[l:] for r in javascripts],
+            stylesheets=['/static/sdist/' + r[l:] for r in stylesheets],
+            javascripts=['/static/sdist/' + r[l:] for r in javascripts],
         )
-        sh.rsync('-r', self.static_dir + '/',
+        sh.rsync('-r', self.static_dir,
                  path(self.build_path, 'static/')) > 1
         return resources
 
@@ -284,6 +277,7 @@ class Index(object):
             sorted=sorted,
             enumerate=enumerate,
             path=path,
+            env=env,
             u=safe_unicode,
         )
         context.update(self.get_resources())
@@ -310,7 +304,7 @@ class Index(object):
 
     @property
     def url(self):
-        return env.url + self.path
+        return self.path
 
     @property
     def output_filename(self):
@@ -416,7 +410,7 @@ def pics(args):
                 config.metadata.date = now.strftime('%Y-%m-%d')
             section = 'metadata'
             key = args['<key>']
-            if key.lower() in('exif.date_and_time', 'exif.date'):
+            if key.lower() in ('exif.date_and_time', 'exif.date'):
                 key = 'exif.Date_and_Time'
             if '.' in key:
                 section, key = key.split('.')

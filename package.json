@@ -1,0 +1,17 @@
+{
+  "name": "pypics",
+  "private": true,
+  "version": "0.1.0",
+  "description": "pypics",
+  "devDependencies": {
+    "bower": "~1.4.1",
+    "gulp": "~3.8.11",
+    "gulp-less": "~3.0.1",
+    "gulp-karma": "~0.0.4",
+    "gulp-concat": "~2.5.2",
+    "gulp-uglify": "~1.1.0",
+    "gulp-jshint": "~1.9.2",
+    "gulp-bg": "~0.0.5",
+    "yargs": "3.5.4"
+  }
+}

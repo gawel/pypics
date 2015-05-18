@@ -36,6 +36,11 @@ function SetCtrl($scope, $window) {
         $scope.current = i;
     };
 
+    $scope.hide = function() {
+        $window.location.hash = '';
+        $scope.current = 0;
+    };
+
     $scope.resize = function (apply) {
         $scope.size = {"height": $window.innerHeight + "px"};
         $scope.image_size = {"height": ($window.innerHeight-20) + "px"};
@@ -48,13 +53,17 @@ function SetCtrl($scope, $window) {
         if ($scope.current < $scope.photos.length - 1) {
             $scope.current += 1;
             $window.location.hash = '#' + $scope.current;
+        } else {
+            $scope.hide();
         }
     };
 
     $scope.previous = function() {
-        if ($scope.current > 1) {
+        if ($scope.current >= 1) {
             $scope.current -= 1;
             $window.location.hash = '#' + $scope.current;
+        } else {
+            $scope.hide();
         }
     };
 

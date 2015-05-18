@@ -1,4 +1,9 @@
+@import "../components/font-awesome/less/font-awesome.less";
+@import "../components/bootstrap/less/bootstrap.less";
+@fa-font-path:        "./fonts";
+
 @height: 50px;
+
 
 .rounded-corners (@radius: 5px) {
   -webkit-border-radius: @radius;
@@ -63,19 +68,21 @@ nav {
     .infos {
         padding-top: 15px;
         display: block;
-        margin-left: 25%;
-        margin-right: 25%;
+        margin-left: 20%;
+        margin-right: 20%;
     }
-    .glyphicon {
-        position: absolute;
-        font-size: @height - 20;
-        top: 10px;
-    }
-    div.glyphicon-circle-arrow-left {
-        left: 10px;
-    }
-    .tags, div.glyphicon-circle-arrow-right {
-        right: 10px;
-        top: 10px;
+    a.previous, a.next {
+        i.fa {
+            position: absolute;
+            font-size: @height - 20;
+            top: 10px;
+        }
+        i.fa-left {
+            left: 10px;
+        }
+        i.fa-right {
+            right: 10px;
+            top: 10px;
+        }
     }
 }

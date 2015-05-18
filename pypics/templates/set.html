@@ -16,31 +16,43 @@
   </div>
   <div class="ng-set text-center" ng-show="anchor()">
     <a class="previous" ng-style="size"
-       ng-show="current > 0"
+       ng-show="current >= 0"
        ng-click="previous()"
        >
     </a>
     <a class="next" ng-style="size"
-       ng-show="current < photos.length - 1"
+       ng-show="current <= photos.length - 1"
        ng-click="next()"
        >
     </a>
     <nav>
       <a class="previous"
-         ng-show="current > 0"
+         ng-show="current >= 0"
          ng-click="previous()"
-         ><div class="glyphicon glyphicon-circle-arrow-left"></div>
+         ><i class="fa fa-left fa-arrow-circle-left"></i>
       </a>
       <a class="next"
-         ng-show="current < photos.length - 1"
+         ng-show="current <= photos.length - 1"
          ng-click="next()"
-         ><div class="glyphicon glyphicon-circle-arrow-right"></div>
+         ><i class="fa fa-right fa-arrow-circle-right"></i>
       </a>
       <div class="infos">
         <a class="btn-small"
-           href="{{container.url}}"
+           href="#" ng-click="hide()"
            >{{container.title}}</a>/<a class="btn-small"
             href="{$ photos[current].href $}">{$ photos[current].title $}</a>
+          &nbsp;&nbsp;
+          <a href="http://www.facebook.com/sharer.php?u={{env.url}}{$ photos[current].href$}"
+             title="Share on Facebook"
+             class="btn-small"
+             ><i class="fa fa-facebook"></i>
+          </a>
+          &nbsp;&nbsp;
+          <a href="http://twitter.com/share?{{env.url}}url={$ photos[current].href$}"
+             title="Share on Twitter"
+             class="btn-small"
+             ><i class="fa fa-twitter"></i>
+          </a>
       </div>
     </nav>
     <img src="{$ img.src $}" ng-show="$index == current"
