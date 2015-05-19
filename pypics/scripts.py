@@ -318,6 +318,19 @@ class Index(object):
                                 container=container,
                                 **context)
 
+    def clean(self):
+        thumbs = os.path.join(self.build_path, 'thumbs')
+        lthumbs = len(thumbs) + 1
+        for root, dirnames, filenames in os.walk(thumbs):
+            if not filenames:
+                continue
+            troot = root[lthumbs:].split('/', 1)[1]
+            for filename in filenames:
+                if not path.exists(path.join(troot, filename)):
+                    filename = path.join(root, filename)
+                    debug('Deleting %s', filename)
+                    os.remove(filename)
+
     @property
     def path(self):
         return '/'
@@ -385,6 +398,7 @@ def pics(args):
         serve()
     elif args['update']:
         pics.generate()
+        pics.clean()
     elif args['deltag']:
         for filename in find('-name *.metadata'):
             filename = filename.strip()
