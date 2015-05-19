@@ -46,19 +46,19 @@ body {
 }
 
 a {
+    cursor: pointer;
     color: color('black');
     &:hover {
         color: color('black');
         text-decoration: none;
     }
 }
+
 nav {
     background: color('white');
     width: 100%;
     height: @height;
     position: absolute;
-}
-nav {
     opacity: 0;
     display: block;
     &:hover {
@@ -85,4 +85,11 @@ nav {
             top: 10px;
         }
     }
+}
+
+@media (max-width: @screen-sm-max) {
+    nav {
+        opacity: 1;
+    }
+
 }

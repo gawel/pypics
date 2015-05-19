@@ -6,28 +6,13 @@ Host your pics in a git repository
 
 pypics generate a static gallery from pictures stored in a git repository.
 
-It use Ember.js_ and Galleria_
-
-.. _ember.js: http://emberjs.com/
-.. _galleria: http://galleria.io/
-
 Installation
 ============
 
-Server side::
+::
 
-  $ sudo aptitude install imagemagick
-  $ wget https://raw.github.com/gawel/pypics/master/scripts/pics-init
-  $ python pics-init a/PhotosAlbum
-
-The ``PhotosAlbum`` directory must be served by your web server
-
-Client side::
-
-  $ sudo aptitude install exif # optionnal
-  $ sudo aptitude install imagemagick # optionnal
-  $ pip install git+git://github.com/gawel/pypics.git#egg=pypics
-
+  $ sudo aptitude install imagemagick exif jhead
+  $ pip install -e git+git://github.com/gawel/pypics.git#egg=pypics
 
 Usage
 =====

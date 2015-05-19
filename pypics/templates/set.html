@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% block contents %}
 <div ng-controller="SetCtrl" data-ng-init="init()">
-  <div class="container set" ng-show="!anchor()">
+  <div class="container-fluid set" ng-show="!anchor()">
     {% for i, object in enumerate(container.object_list) %}
-      <div class="thumb col-lg-2">
+      <div class="thumb col-md-2 col-sm-4">
 
         <a href="{{ object.url }}" title="{{ object.title }}"
            rel="{{ object.photo() }}" id="{{ i }}"
-           ng-click="show({{i}})"
+           ng-click="show({{ i }})"
            ><img class="img-thumbnail"
                  src="{{ object.thumbnail() }}"
                  alt="{{ object.title }}" /></a>
@@ -42,13 +42,13 @@
            >{{container.title}}</a>/<a class="btn-small"
             href="{$ photos[current].href $}">{$ photos[current].title $}</a>
           &nbsp;&nbsp;
-          <a href="http://www.facebook.com/sharer.php?u={{env.url}}{$ photos[current].href$}"
+          <a href="http://www.facebook.com/sharer.php?u={{ env.url }}{$ photos[current].href$}"
              title="Share on Facebook"
              class="btn-small"
              ><i class="fa fa-facebook"></i>
           </a>
           &nbsp;&nbsp;
-          <a href="http://twitter.com/share?{{env.url}}url={$ photos[current].href$}"
+          <a href="http://twitter.com/share?{{ env.url }}url={$ photos[current].href$}"
              title="Share on Twitter"
              class="btn-small"
              ><i class="fa fa-twitter"></i>

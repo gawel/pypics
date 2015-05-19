@@ -32,10 +32,6 @@ def application(environ, start_response):
         else:
             filename = 'index.html'
         body = open(filename, 'rb').read()
-        #body = body % dict(path='.', dirname='.')
-        body = body.replace('USE_THUMBS = true', 'USE_THUMBS = false')
-        if 'admin' in sys.argv:
-            body = body.replace('ADMIN = false', 'ADMIN = true')
         resp.body = body
     elif os.path.isfile(filename):
         if req.method.lower() == 'delete':

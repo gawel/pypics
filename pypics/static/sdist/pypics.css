@@ -7837,6 +7837,7 @@ body {
   margin-top: 10px;
 }
 a {
+  cursor: pointer;
   color: #000000;
 }
 a:hover {
@@ -7869,12 +7870,12 @@ nav a.next i.fa {
   font-size: 30px;
   top: 10px;
 }
-nav a.previous i.fa-arrow-circle-left,
-nav a.next i.fa-arrow-circle-left {
+nav a.previous i.fa-left,
+nav a.next i.fa-left {
   left: 10px;
 }
-nav .tags,
-nav i.fa-arrow-circle-right {
+nav a.previous i.fa-right,
+nav a.next i.fa-right {
   right: 10px;
   top: 10px;
 }

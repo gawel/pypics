@@ -4,23 +4,39 @@ from operator import attrgetter
 from collections import defaultdict
 from ConfigObject import ConfigObject
 from datetime import datetime
-from chut import test, git, path, env, find, pwd, mkdir
+from chut import cp, test, path, env, find, pwd, mkdir
+from chut import info, debug
 import chut as sh
 import os
 
 env.lc_all = 'C'
+
+aptitude = []
 
 if sh.which('exif'):
     EXIF_AVAILABLE = True
 else:
     EXIF_AVAILABLE = False
     print('exif binary is not available')
+    aptitude.append('exif')
 
 if sh.which('convert'):
     CONVERT_AVAILABLE = True
 else:
     CONVERT_AVAILABLE = False
     print('convert binary is not available')
+    aptitude.append('imagemagick')
+
+if sh.which('convert'):
+    JHEAD_AVAILABLE = True
+else:
+    JHEAD_AVAILABLE = False
+    print('jhead binary is not available')
+    aptitude.append('jhead')
+
+if aptitude:
+    print('Please run:')
+    print('$ sudo aptitude install %s' % ' '.join(aptitude))
 
 
 def safe_unicode(value):
@@ -50,13 +66,17 @@ class Photo(ConfigObject):
         return super(Photo, self).__getattr__(attr)
 
     def rotate(self, original=None):
-        if CONVERT_AVAILABLE:
-            filename = self.filename[:-9]
-            if not original:
-                original = filename
-            print('Processing convert for %s' % filename)
-            print(sh.convert('-auto-orient', repr(str(original)), filename,
-                             shell=True, combine_stderr=True))
+        filename = self.filename[:-9]
+        if not original:
+            original = filename
+        if path.abspath(original) != path.abspath(filename):
+            info('Copying %s...' % filename)
+            debug(cp(original, filename))
+        if JHEAD_AVAILABLE:
+            debug('Rotating %s...' % filename)
+            debug(sh.jhead('-autorot -norot', filename))
+            self.parse_exif()
+            self.write()
 
     @property
     def title(self):
@@ -106,7 +126,7 @@ class Photo(ConfigObject):
     def parse_exif(self):
         filename = self.filename[:-9]
         if EXIF_AVAILABLE:
-            print('Processing exif for %s' % filename)
+            debug('Processing exif for %s' % filename)
             data = {}
             sh.env.lc_all = "C"
             for line in sh.exif('--xml-output', filename):
@@ -282,11 +302,11 @@ class Index(object):
         )
         context.update(self.get_resources())
 
-        print(context['all_sets'])
+        debug(context['all_sets'])
 
         self.render(self, **context)
         for container in sets.values() + tags.values():
-            print(container)
+            debug(container)
             self.render(container,
                         title=container.name,
                         container=container,
@@ -331,55 +351,35 @@ class Index(object):
         template = self.env.get_template(tmpl)
         filename = kwargs.get('filename', path(self.build_path, tmpl))
         mkdir('-p', path.dirname(filename))
-        with open(filename, 'w') as fd:
-            fd.write(template.render(**kwargs).encode('utf8'))
+        data = template.render(**kwargs).encode('utf8')
+        with open(filename) as fd:
+            if fd.read() != data:
+                with open(filename, 'w') as fd:
+                    fd.write(data)
 
 
-@sh.console_script
-def post_update(args):
-    """
-    Usage: %prog [options] [<ref>]
-
-    Options:
-
-    -t, --thumbs    Generate thumbs
-    """
-    env.git_dir = pwd()
-    env.git_work_tree = path.dirname(pwd())
-    sh.cd(env.git_work_tree)
-    git('reset', '--hard', 'master') > 1
-    if not test.d('lib/emberjs/.git'):
-        git('submodule', 'init') > 1
-    git('submodule', 'update') > 1
-    auto_update()
-
-
-@sh.console_script
+@sh.console_script(fmt='brief')
 def pics(args):
     """
-    Usage: %prog (update|push) [options]
+    Usage: %prog (update|serve) [options]
            %prog add [options] <image>...
            %prog set [options] <key> <value>
            %prog (addtag|deltag) [options] <tag>...
-           %prog (serve|admin) [options]
 
     Options:
 
-    -u URL, --url=URL  Absolute url to use
-    -t, --thumbs       Generate thumbs
-    -s, --static       Generate static assets
-    -d, --directory    A directory containing images [default: .]
-    -h, --help         Print this help
+    -u URL, --url=URL   Absolute url to use
+    -t, --thumbs        Generate thumbs
+    -d, --directory     A directory containing images [default: .]
+    %options
     """
     build_path = os.path.abspath('build')
     pics = Index(build_path=build_path)
     if args['--thumbs']:
         pics.resize()
-    if args['--static']:
-        pics.get_resources()
     url = args['--url'] or ''
     env.url = url.strip('/')
-    if args['serve'] or args['admin']:
+    if args['serve']:
         os.chdir(pics.build_path)
         from serve import serve
         serve()
