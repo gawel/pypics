@@ -2,8 +2,6 @@
 pypics
 ============
 
-Host your pics in a git repository
-
 pypics generate a static gallery from pictures stored in a git repository.
 
 Installation
