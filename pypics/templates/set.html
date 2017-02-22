@@ -41,18 +41,25 @@
            href="#" ng-click="hide()"
            >{{container.title}}</a>/<a class="btn-small"
             href="{$ photos[current].href $}">{$ photos[current].title $}</a>
-          &nbsp;&nbsp;
-          <a href="http://www.facebook.com/sharer.php?u={{ env.url }}{$ photos[current].href$}"
-             title="Share on Facebook"
-             class="btn-small"
-             ><i class="fa fa-facebook"></i>
-          </a>
-          &nbsp;&nbsp;
-          <a href="http://twitter.com/share?{{ env.url }}url={$ photos[current].href$}"
-             title="Share on Twitter"
-             class="btn-small"
-             ><i class="fa fa-twitter"></i>
-          </a>
+        &nbsp;&nbsp;
+        <a href="http://www.facebook.com/sharer.php?u={{ env.url }}{$ photos[current].href$}"
+           title="Share on Facebook"
+           class="btn-small"
+           ><i class="fa fa-facebook"></i>
+        </a>
+        &nbsp;&nbsp;
+        <a href="http://twitter.com/share?{{ env.url }}url={$ photos[current].href$}"
+           title="Share on Twitter"
+           class="btn-small"
+           ><i class="fa fa-twitter"></i>
+        </a>
+        &nbsp;&nbsp;
+        <a href="/delete{$ photos[current].href $}"
+           title="Delete"
+           ng-show="editable"
+           class="btn btn-xs btn-danger"
+           ><i class="fa fa-times-circle"></i>
+        </a>
       </div>
     </nav>
     <img src="{$ img.src $}" ng-show="$index == current"

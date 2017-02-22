@@ -233,6 +233,8 @@ function SetCtrl($scope, $window) {
     $scope.photos = [];
     $scope.current = 0;
 
+    $scope.editable = /localhost/.exec($window.location);
+
     $scope.anchor = function() {
         return $window.location.hash;
     };

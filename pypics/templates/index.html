@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block contents %}
-<div class="container">
+<div class="container-fluid">
   {% for object in all_sets %}
-    <div class="thumb col-lg-2">
+    <div class="thumb col-md-2 col-sm-4">
       <a href="{{ object.url }}" title="{{ object.title }}"
          rel="{{ object.photo() }}"
          ><img class="img-thumbnail"

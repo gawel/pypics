@@ -365,10 +365,14 @@ class Index(object):
         filename = kwargs.get('filename', path(self.build_path, tmpl))
         mkdir('-p', path.dirname(filename))
         data = template.render(**kwargs).encode('utf8')
-        with open(filename) as fd:
-            if fd.read() != data:
-                with open(filename, 'w') as fd:
-                    fd.write(data)
+        if os.path.isfile(filename):
+            with open(filename) as fd:
+                if fd.read() != data:
+                    with open(filename, 'w') as fd:
+                        fd.write(data)
+        else:
+            with open(filename, 'w') as fd:
+                fd.write(data)
 
 
 @sh.console_script(fmt='brief')
@@ -386,13 +390,15 @@ def pics(args):
     -d, --directory     A directory containing images [default: .]
     %options
     """
-    build_path = os.path.abspath('build')
+    env.photos = pwd()
+    env.build_path = build_path = os.path.abspath('build')
     pics = Index(build_path=build_path)
     if args['--thumbs']:
         pics.resize()
     url = args['--url'] or ''
     env.url = url.strip('/')
     if args['serve']:
+        pics.get_resources()
         os.chdir(pics.build_path)
         from serve import serve
         serve()
